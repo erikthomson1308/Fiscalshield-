@@ -9,7 +9,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -27,6 +26,11 @@ jobs:
         run: node tools/testa.js
 
       - uses: actions/configure-pages@v5
+        # habilita o Pages no proprio fluxo. Sem isto, o primeiro deploy de um
+        # repositorio novo falha com "Get Pages site failed" e exige alguem
+        # ligar a opcao a mao em Settings antes de rodar de novo.
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
