@@ -1,0 +1,51 @@
+{
+  "descricao": "Complementos e sobrescritas declarados sobre a base extraida dos documentos oficiais. Tudo o que entra aqui aparece marcado como 'ajuste declarado' na tela Base de Dados do site, separado do que foi extraido automaticamente. Este e o lugar correto para corrigir ou estender a base sem reescrever o extrator.",
+  "revisao": "2026-09-22",
+  "campos_adicionais": [
+    {
+      "id": "Q10",
+      "tag": "qBCProd",
+      "pai": "Q08.1",
+      "caminho": "infNFe/det/imposto/PIS/PISOutr/qBCProd",
+      "ele": "E",
+      "tipo": "N",
+      "ocor": "1-1",
+      "tam": "12v0-4",
+      "alt": "Q08.1",
+      "desc": "Quantidade Vendida",
+      "obs": "",
+      "grupo": "Grupo Q. PIS",
+      "justificativa": "Ausente no texto do ANEXO I: o leiaute salta da sequencia 283.1 para 287, omitindo 284, 285 e 286. A estrutura e identica a do grupo COFINSOutr (S05), onde as sequencias 310, 311 e 312 trazem qBCProd, vAliqProd e vCOFINS nas mesmas posicoes. Sem este complemento o campo aparece como fora do mapeamento em notas validas."
+    },
+    {
+      "id": "Q11",
+      "tag": "vAliqProd",
+      "pai": "Q08.1",
+      "caminho": "infNFe/det/imposto/PIS/PISOutr/vAliqProd",
+      "ele": "E",
+      "tipo": "N",
+      "ocor": "1-1",
+      "tam": "11v0-4",
+      "alt": "Q08.1",
+      "desc": "Aliquota do PIS (em reais)",
+      "obs": "",
+      "grupo": "Grupo Q. PIS",
+      "justificativa": "Mesma omissao da sequencia 284-286 do ANEXO I. Espelha S10/vAliqProd do grupo COFINSOutr."
+    },
+    {
+      "id": "Q09",
+      "tag": "vPIS",
+      "pai": "Q05",
+      "caminho": "infNFe/det/imposto/PIS/PISOutr/vPIS",
+      "ele": "E",
+      "tipo": "N",
+      "ocor": "1-1",
+      "tam": "13v2",
+      "desc": "Valor do PIS",
+      "obs": "",
+      "grupo": "Grupo Q. PIS",
+      "justificativa": "Mesma omissao da sequencia 284-286 do ANEXO I. Espelha S11/vCOFINS do grupo COFINSOutr, que tem pai S05 (o proprio grupo Outras Operacoes) e nao a sequencia XML."
+    }
+  ],
+  "sobrescritas": []
+}

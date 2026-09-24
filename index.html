@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiscal Shield — Validador de NF-e / NFC-e</title>
+<meta name="description" content="Validador de XML de NF-e e NFC-e contra o leiaute oficial 4.00, as regras de validação da SEFAZ e a Reforma Tributária (IBS/CBS/IS). Roda inteiramente no navegador.">
+<link rel="stylesheet" href="assets/css/estilo.css">
+</head>
+<body>
+
+<header class="topo">
+  <div class="faixa">
+    <div class="marca">
+      <span class="escudo" aria-hidden="true"></span>
+      <div>
+        <h1>Fiscal Shield</h1>
+        <p>Validação de NF-e e NFC-e contra o leiaute oficial, as regras da SEFAZ e a Reforma Tributária</p>
+      </div>
+    </div>
+    <div class="selo-base" id="selo-base">
+      <span class="pulso"></span> carregando base de dados…
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ENTRADA ------------------------------------------------------------ -->
+  <section class="cartao" id="painel-entrada">
+    <div id="area-solta" class="solta" tabindex="0" role="button"
+         aria-label="Selecionar arquivos XML para validação">
+      <div class="solta-icone" aria-hidden="true">&#8681;</div>
+      <p class="solta-titulo">Arraste os XMLs aqui ou clique para selecionar</p>
+      <p class="solta-nota">
+        Nenhum arquivo sai do seu computador: a validação roda inteira no navegador.
+      </p>
+      <input type="file" id="entrada-arquivos" accept=".xml,text/xml,application/xml" multiple hidden>
+    </div>
+
+    <div class="opcoes">
+      <label class="opcao">
+        <span>Tolerância no recálculo</span>
+        <select id="opt-tolerancia">
+          <option value="0.001">0,1% (padrão do projeto)</option>
+          <option value="0.0001">0,01%</option>
+          <option value="0">Exata (apenas arredondamento de centavo)</option>
+        </select>
+      </label>
+      <label class="opcao">
+        <span>Ordem dos elementos</span>
+        <select id="opt-ordem">
+          <option value="aviso">Divergência gera advertência</option>
+          <option value="erro">Divergência gera não conformidade</option>
+          <option value="ignora">Não verificar</option>
+        </select>
+      </label>
+      <label class="opcao caixa">
+        <input type="checkbox" id="opt-mapeamento" checked>
+        <span>Apontar campos fora do mapeamento</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- RESULTADO ---------------------------------------------------------- -->
+  <section id="painel-resultado" hidden>
+
+    <div class="barra-arquivos" id="barra-arquivos"></div>
+
+    <div class="placar" id="placar"></div>
+
+    <nav class="abas" id="abas" role="tablist">
+      <button class="aba ativa" data-aba="resumo" role="tab">Resumo</button>
+      <button class="aba" data-aba="achados" role="tab">Achados</button>
+      <button class="aba" data-aba="campos" role="tab">Campos</button>
+      <button class="aba" data-aba="tributos" role="tab">Tributos</button>
+      <button class="aba" data-aba="reforma" role="tab">Reforma (IBS/CBS/IS)</button>
+      <button class="aba" data-aba="base" role="tab">Base de dados</button>
+    </nav>
+
+    <div class="cartao painel-aba" id="aba-resumo"></div>
+    <div class="cartao painel-aba" id="aba-achados" hidden></div>
+    <div class="cartao painel-aba" id="aba-campos" hidden></div>
+    <div class="cartao painel-aba" id="aba-tributos" hidden></div>
+    <div class="cartao painel-aba" id="aba-reforma" hidden></div>
+    <div class="cartao painel-aba" id="aba-base" hidden></div>
+
+    <div class="acoes-exportar">
+      <button class="botao" id="btn-html">Baixar relatório (HTML)</button>
+      <button class="botao secundario" id="btn-json">Baixar resultado (JSON)</button>
+      <button class="botao secundario" id="btn-csv">Baixar achados (CSV)</button>
+    </div>
+  </section>
+
+  <!-- BASE (sem arquivo carregado) ---------------------------------------- -->
+  <section class="cartao" id="painel-base-inicial">
+    <h2>O que esta ferramenta verifica</h2>
+    <div class="grade-cap">
+      <div><h3>Leiaute</h3><p>Cada elemento do XML é conferido contra o leiaute oficial: existência, obrigatoriedade, tipo, tamanho, casas decimais, domínio de valores e ordem.</p></div>
+      <div><h3>Chave de acesso</h3><p>Dígito verificador por módulo 11 e coerência dos 44 dígitos com cUF, data de emissão, CNPJ, modelo, série, número e tipo de emissão.</p></div>
+      <div><h3>Tributos</h3><p>Recálculo de ICMS, IPI, PIS e COFINS por item e reconciliação dos totalizadores da nota, incluindo a fórmula oficial do vNF.</p></div>
+      <div><h3>Reforma Tributária</h3><p>Grupos de IBS, CBS e IS conforme a NT 2025.002-RTC: presença, bases, alíquotas, valores e totalizadores.</p></div>
+      <div><h3>Cadastro</h3><p>Dígito verificador de CNPJ e CPF, coerência entre CST/CSOSN e o regime tributário, e entre CFOP e o destino da operação.</p></div>
+      <div><h3>Rastreabilidade</h3><p>Todo apontamento cita o documento, a página e a regra oficial que o sustenta. Nada é afirmado sem fonte.</p></div>
+    </div>
+    <p class="nota-privacidade">
+      Os arquivos são lidos pelo próprio navegador. Não há servidor, upload nem
+      armazenamento — feche a aba e nada permanece.
+    </p>
+  </section>
+
+</main>
+
+<footer class="rodape">
+  <div id="rodape-fontes"></div>
+  <p class="aviso">
+    Ferramenta de apoio à conferência técnica. Não substitui a análise do time
+    fiscal nem a autorização da SEFAZ. Regras de benefício fiscal e obrigações
+    estaduais específicas não são avaliadas.
+  </p>
+</footer>
+
+<!-- A base como script, para o site funcionar aberto direto do disco, sem
+     servidor. Se este arquivo faltar, o site usa os .json de data/ - o que
+     exige estar servido por HTTP. -->
+<script src="data/base-embutida.js"></script>
+
+<script src="assets/js/base.js"></script>
+<script src="assets/js/leitor.js"></script>
+<script src="assets/js/motor.js"></script>
+<script src="assets/js/tributos.js"></script>
+<script src="assets/js/relatorio.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+/* Sistema de cores Thomson Reuters.
+ *
+ * Decisoes que este arquivo aplica, e o motivo de cada uma:
+ *
+ * - TR Orange #D64000 e obrigatorio em qualquer peca da marca. O laranja
+ *   #FF8000 que costuma circular nao e cor TR.
+ * - Uma unica fundacao. Escolhida TR Bold Navy; TR Racing Green nao aparece
+ *   em lugar nenhum, porque as duas nunca convivem.
+ * - Um unico par secundario. Escolhido Amber, cujo tom escuro coincide com o
+ *   TR Alert Orange - o que mantem a tela coerente sem misturar pares.
+ * - Blocos de canto vivo. O sistema de grid da marca nao usa cartao
+ *   arredondado.
+ * - Cinza nao e cor de texto. Grafite e a cor de corpo; Bold Navy carrega os
+ *   rotulos secundarios. Cinza fica so em borda e superficie.
+ * - A familia de alerta e de interface, nao da marca: vale para estado de
+ *   sistema e nada mais. Alert Orange e Alert Blue nao alcancam 4,5:1 em
+ *   texto pequeno, entao entram como borda, nunca sob texto miudo branco.
+ */
+:root{
+  /* --- assinatura e fundacao --- */
+  --tr-orange:#D64000;
+  --tr-navy:#011B35;
+
+  /* --- utilitarias --- */
+  --tr-white:#FFFFFF;
+  --tr-graphite:#212223;
+  --tr-gray-1:#F9F7F5;
+  --tr-gray-2:#E5E5E5;
+  --tr-gray-3:#9F9F9F;
+
+  /* --- par secundario unico: Amber --- */
+  --tr-light-amber:#F8EADD;
+  --tr-dark-amber:#D4792A;
+
+  /* --- familia de alerta (somente estado de sistema) --- */
+  --alerta-vermelho:#DC0A0A;
+  --alerta-verde:#387C2B;
+  --alerta-laranja:#D4792A;
+  --alerta-azul:#0099C4;
+
+  /* --- papeis --- */
+  --tinta:var(--tr-graphite);
+  --tinta-rotulo:var(--tr-navy);
+  --linha:var(--tr-gray-2);
+  --fundo:var(--tr-gray-1);
+  --papel:var(--tr-white);
+  --sombra:0 1px 2px rgba(1,27,53,.06), 0 4px 14px rgba(1,27,53,.06);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--fundo);
+  color:var(--tinta);
+  font:15px/1.55 "Clario",Arial,Helvetica,sans-serif;
+}
+h1,h2,h3{margin:0 0 .4em;line-height:1.25}
+h1{font-size:20px;letter-spacing:-.2px}
+h2{font-size:17px}
+h3{font-size:14px}
+p{margin:0 0 .6em}
+a{color:var(--tr-navy)}
+a:hover{color:var(--tr-orange)}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+
+/* ---------- topo ---------- */
+.topo{background:var(--tr-navy);color:var(--tr-white);border-bottom:4px solid var(--tr-orange)}
+.faixa{
+  max-width:1220px;margin:0 auto;padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+}
+.marca{display:flex;align-items:center;gap:14px}
+.marca h1{color:var(--tr-white)}
+.marca p{margin:0;color:var(--tr-white);opacity:.85;font-size:13px;max-width:56ch}
+.escudo{
+  width:32px;height:36px;flex:none;background:var(--tr-orange);
+  clip-path:polygon(50% 0,100% 18%,100% 62%,50% 100%,0 62%,0 18%);
+}
+.selo-base{
+  font-size:12.5px;color:var(--tr-white);background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.3);padding:7px 14px;
+  display:flex;align-items:center;gap:8px;
+}
+.selo-base b{color:var(--tr-white);font-weight:700}
+.pulso{width:8px;height:8px;background:var(--tr-orange);flex:none}
+
+/* ---------- estrutura ---------- */
+main{max-width:1220px;margin:0 auto;padding:24px}
+.cartao{
+  background:var(--papel);border:1px solid var(--linha);
+  box-shadow:var(--sombra);padding:22px;margin-bottom:18px;
+}
+
+/* ---------- entrada ---------- */
+.solta{
+  border:2px dashed var(--tr-gray-3);background:var(--tr-gray-1);
+  padding:38px 24px;text-align:center;cursor:pointer;transition:.15s;
+}
+.solta:hover,.solta:focus-visible{border-color:var(--tr-orange);background:var(--tr-light-amber);outline:none}
+.solta.sobre{border-color:var(--tr-orange);background:var(--tr-light-amber)}
+.solta-icone{font-size:30px;color:var(--tr-orange);line-height:1}
+.solta-titulo{font-weight:700;margin:10px 0 4px}
+.solta-nota{color:var(--tinta);font-size:13px;margin:0}
+
+.opcoes{display:flex;gap:22px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--linha)}
+.opcao{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--tinta-rotulo);font-weight:700}
+.opcao.caixa{flex-direction:row;align-items:center;gap:8px;align-self:flex-end;padding-bottom:7px}
+.opcao select{
+  font:inherit;font-size:13px;font-weight:400;padding:6px 9px;border:1px solid var(--linha);
+  background:var(--papel);color:var(--tinta);min-width:250px;
+}
+.opcao select:focus{outline:2px solid var(--tr-orange);outline-offset:1px}
+
+/* ---------- arquivos ---------- */
+.barra-arquivos{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip-arquivo{
+  display:flex;align-items:center;gap:9px;background:var(--papel);
+  border:1px solid var(--linha);padding:7px 15px;
+  font:inherit;font-size:13px;color:var(--tinta);cursor:pointer;transition:.12s;
+}
+.chip-arquivo:hover{border-color:var(--tr-navy)}
+.chip-arquivo.ativo{border-color:var(--tr-orange);border-width:2px;font-weight:700}
+.ponto{width:8px;height:8px;flex:none}
+.ponto.reprovado{background:var(--alerta-vermelho)}
+.ponto.alerta{background:var(--alerta-laranja)}
+.ponto.aprovado{background:var(--alerta-verde)}
+
+/* ---------- placar ---------- */
+.placar{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:18px}
+.marcador{
+  background:var(--papel);border:1px solid var(--linha);border-left:5px solid var(--tr-navy);
+  padding:14px 16px;box-shadow:var(--sombra);
+}
+.marcador .n{font-size:26px;font-weight:700;line-height:1.1;letter-spacing:-.5px;color:var(--tinta)}
+.marcador .r{font-size:11.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--tinta-rotulo);margin-top:3px;font-weight:700}
+.marcador.erro{border-left-color:var(--alerta-vermelho)} .marcador.erro .n{color:var(--alerta-vermelho)}
+.marcador.aviso{border-left-color:var(--alerta-laranja)}
+.marcador.ok{border-left-color:var(--alerta-verde)} .marcador.ok .n{color:var(--alerta-verde)}
+.marcador.info{border-left-color:var(--tr-orange)} .marcador.info .n{color:var(--tr-orange)}
+
+/* ---------- abas ---------- */
+.abas{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:-1px;position:relative;z-index:1}
+.aba{
+  font:inherit;font-size:13px;padding:9px 17px;border:1px solid var(--linha);
+  border-bottom-color:transparent;background:var(--tr-gray-1);color:var(--tinta-rotulo);
+  cursor:pointer;
+}
+.aba:hover{background:var(--tr-gray-2)}
+.aba.ativa{
+  background:var(--papel);color:var(--tinta);font-weight:700;
+  border-bottom-color:var(--papel);border-top:3px solid var(--tr-orange);
+}
+.aba:focus-visible{outline:2px solid var(--tr-orange);outline-offset:-2px}
+
+/* ---------- achados ---------- */
+/* O fundo de erro continua branco: a marca nao publica um tom claro de
+   vermelho, e inventar um seria criar cor fora da paleta. A borda e a
+   etiqueta e que carregam o estado. */
+.achado{
+  border:1px solid var(--linha);border-left:5px solid var(--tr-navy);
+  padding:13px 16px;margin-bottom:10px;background:var(--papel);
+}
+.achado.erro{border-left-color:var(--alerta-vermelho);border-left-width:6px}
+.achado.aviso{border-left-color:var(--alerta-laranja);background:var(--tr-light-amber)}
+.achado.info{border-left-color:var(--alerta-azul);background:var(--tr-gray-1)}
+.achado-topo{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:5px}
+.etiqueta{
+  font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  padding:2px 8px;flex:none;
+}
+/* Branco sobre Alert Red alcanca 5,13:1. Sobre Alert Orange e Alert Blue
+   ficaria em 3,2:1, abaixo do minimo para texto pequeno - por isso esses
+   dois viram contorno com texto em grafite. */
+.etiqueta.erro{background:var(--alerta-vermelho);color:var(--tr-white)}
+.etiqueta.aviso{background:var(--tr-white);color:var(--tinta);border:2px solid var(--alerta-laranja)}
+.etiqueta.info{background:var(--tr-white);color:var(--tinta);border:2px solid var(--alerta-azul)}
+.achado-alvo{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--tinta)}
+.achado-msg{margin:0 0 6px;font-weight:700}
+.achado-detalhe{font-size:13px;color:var(--tinta);margin:0 0 6px}
+.achado-fonte{font-size:11.5px;color:var(--tinta);border-top:1px solid var(--linha);padding-top:6px;margin:0}
+.achado-fonte b{font-weight:700;color:var(--tinta-rotulo)}
+
+/* ---------- tabelas ---------- */
+.rolagem{overflow:auto;max-height:600px;border:1px solid var(--linha)}
+table{border-collapse:collapse;width:100%;font-size:13px;background:var(--papel)}
+th,td{padding:7px 11px;text-align:left;border-bottom:1px solid var(--linha);vertical-align:top}
+th{
+  background:var(--tr-navy);font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--tr-white);position:sticky;top:0;z-index:1;font-weight:700;
+}
+tbody tr:hover{background:var(--tr-gray-1)}
+td.num{text-align:right;font-family:ui-monospace,Menlo,Consolas,monospace;white-space:nowrap}
+td.cod{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--tinta)}
+tr.linha-erro{box-shadow:inset 5px 0 0 var(--alerta-vermelho)}
+tr.linha-erro:hover{background:var(--tr-gray-1)}
+tr.linha-aviso{background:var(--tr-light-amber)}
+
+.tag{
+  display:inline-block;font-size:11px;padding:1px 7px;
+  background:var(--tr-gray-1);color:var(--tinta);border:1px solid var(--linha);
+}
+/* Fundo fixo nas tags: sem isso a tag vermelha herdaria o ambar do bloco de
+   aviso e cairia para 4,35:1, abaixo do minimo para texto pequeno. */
+.tag.ok{background:var(--tr-white);border-color:var(--alerta-verde);color:var(--alerta-verde);font-weight:700}
+.tag.erro{background:var(--tr-white);border-color:var(--alerta-vermelho);color:var(--alerta-vermelho);font-weight:700}
+.tag.aviso{background:var(--tr-light-amber);border-color:var(--alerta-laranja);color:var(--tinta);font-weight:700}
+.tag.ajuste{background:var(--tr-white);border:2px solid var(--tr-orange);color:var(--tr-orange);font-weight:700}
+
+/* ---------- busca ---------- */
+.busca{
+  width:100%;font:inherit;font-size:13.5px;padding:9px 13px;margin-bottom:12px;
+  border:1px solid var(--linha);background:var(--papel);color:var(--tinta);
+}
+.busca:focus{outline:2px solid var(--tr-orange);outline-offset:1px;border-color:var(--tr-orange)}
+
+/* ---------- diversos ---------- */
+.grade-cap{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin:16px 0}
+.grade-cap h3{color:var(--tr-orange);text-transform:uppercase;font-size:11.5px;letter-spacing:.7px}
+.grade-cap p{font-size:13px;color:var(--tinta);margin:0}
+.nota-privacidade{
+  font-size:12.5px;color:var(--tinta);background:var(--tr-light-amber);
+  border-left:5px solid var(--tr-orange);padding:11px 14px;margin:0;
+}
+
+.acoes-exportar{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 30px}
+.botao{
+  font:inherit;font-size:13.5px;font-weight:700;padding:10px 20px;
+  border:2px solid var(--tr-orange);background:var(--tr-orange);color:var(--tr-white);cursor:pointer;
+}
+/* O hover troca para a fundacao em forca total, em vez de escurecer o
+   laranja: a marca nao admite tom nao aprovado. */
+.botao:hover{background:var(--tr-navy);border-color:var(--tr-navy)}
+.botao:focus-visible{outline:2px solid var(--tr-navy);outline-offset:2px}
+.botao.secundario{background:var(--papel);color:var(--tinta);border-color:var(--tr-navy)}
+.botao.secundario:hover{background:var(--tr-navy);color:var(--tr-white)}
+
+.sumiu{color:var(--tinta);font-style:italic;padding:22px;text-align:center}
+.linha-dados{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:14px;font-size:13px}
+.linha-dados div{min-width:130px}
+.linha-dados span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--tinta-rotulo);font-weight:700}
+.linha-dados b{font-weight:700}
+
+.rodape{border-top:4px solid var(--tr-orange);background:var(--papel);margin-top:20px}
+.rodape > *{max-width:1220px;margin:0 auto;padding:0 24px}
+.rodape #rodape-fontes{padding-top:20px;font-size:12.5px;color:var(--tinta)}
+.rodape .aviso{padding:12px 24px 26px;font-size:12px;color:var(--tinta);max-width:1220px}
+.fonte-item{margin-bottom:5px}
+.fonte-item .mono{font-size:11px;color:var(--tinta-rotulo)}
+
+@media (max-width:720px){
+  .faixa{padding:14px 16px}
+  main{padding:16px}
+  .cartao{padding:16px}
+  .opcao select{min-width:100%}
+}
