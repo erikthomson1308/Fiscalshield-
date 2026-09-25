@@ -44,7 +44,9 @@ if (existe('assets/js/nfse/motor.js') && existe('data/nfse/versoes.json')) {
   require(dir('assets/js/nfse/motor.js'));
   global.NFSe.Base.carregaDe(
     leJSON('data/nfse/versoes.json'), leJSON('data/nfse/tabelas.json'),
-    leJSON('data/nfse/comparativo.json'), leJSON('data/nfse/fontes.json'));
+    leJSON('data/nfse/comparativo.json'), leJSON('data/nfse/fontes.json'),
+    existe('data/nfse/municipios.json')
+      ? leJSON('data/nfse/municipios.json') : null);
   disponiveis.nfse = true;
   console.log('NFS-e  : %s | %d campos | %d regras | %d pares CST×cClassTrib',
     global.NFSe.Base.dados.vigente.toUpperCase(),

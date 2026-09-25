@@ -33,7 +33,13 @@
   },
   "exemplo-dps-com-ibscbs.xml": {
     "tipo": "nfse", "erros": 0, "avisos": 0,
-    "nota": "par CST x cClassTrib valido"
+    "nota": "par CST x cClassTrib valido, municipio aderente"
+  },
+  "exemplo-dps-municipio-nao-aderente.xml": {
+    "tipo": "nfse",
+    "erros": 1,
+    "exige_titulo": ["não é aderente ao Emissor Nacional"],
+    "nota": "mesma DPS, so muda o municipio emissor. O documento esta correto por dentro e ainda assim nao deveria existir como DPS - e o caso que se diagnostica errado quando se olha so o conteudo"
   },
 
   "exemplo-dps-com-defeitos.xml": {
@@ -48,8 +54,9 @@
       "Identificador da DPS não confere com nDPS",
       "Identificador da DPS não confere com CNPJ do prestador",
       "cClassTrib não consta na associação oficial para este CST",
-      "CNPJ com dígito verificador inválido"
+      "CNPJ com dígito verificador inválido",
+      "não é aderente ao Emissor Nacional"
     ],
-    "nota": "teste negativo: sete defeitos injetados de proposito"
+    "nota": "teste negativo: sete defeitos injetados de proposito, mais o roteamento"
   }
 }

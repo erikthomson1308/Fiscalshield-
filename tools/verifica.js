@@ -42,7 +42,9 @@ if (existe('assets/js/nfse/motor.js') && existe('data/nfse/versoes.json')) {
   require(dir('assets/js/nfse/motor.js'));
   global.NFSe.Base.carregaDe(
     leJSON('data/nfse/versoes.json'), leJSON('data/nfse/tabelas.json'),
-    leJSON('data/nfse/comparativo.json'), leJSON('data/nfse/fontes.json'));
+    leJSON('data/nfse/comparativo.json'), leJSON('data/nfse/fontes.json'),
+    existe('data/nfse/municipios.json')
+      ? leJSON('data/nfse/municipios.json') : null);
   disponiveis.nfse = global.NFSe;
 }
 
@@ -61,6 +63,41 @@ function falha(arquivo, msg) {
 
 console.log('validadores nesta build: %s',
   Object.keys(disponiveis).join(', ') || 'nenhum');
+console.log('');
+
+// --------------------------------------------------------------------
+// Os arquivos que o roteador pede existem nesta build?
+//
+// Esta checagem nasceu de uma falha em producao. O roteador listava
+// mapeamento-sap.js entre os scripts obrigatorios, e a versao publica o
+// remove por classificacao: o site quebrava ao carregar qualquer documento,
+// com "nao foi possivel carregar". O teste nao viu nada, porque roda no Node
+// e nunca tocou no caminho de carregamento do navegador.
+//
+// Conferir a lista declarada contra o que existe em disco fecha esse buraco
+// sem precisar de navegador no fluxo de publicacao.
+// --------------------------------------------------------------------
+require(dir('assets/js/roteador.js'));
+const TIPOS = (global.Roteador || { TIPOS: {} }).TIPOS;
+
+console.log('scripts declarados pelo roteador:');
+Object.keys(TIPOS).forEach((chave) => {
+  const t = TIPOS[chave];
+  if (!disponiveis[chave]) {
+    console.log('  %s: validador ausente nesta build, não verificado', chave);
+    return;
+  }
+  (t.scripts || []).forEach((p) => {
+    if (!existe(p)) {
+      falha(p, 'declarado obrigatório para ' + t.rotulo + ' e ausente nesta '
+        + 'build — o site quebraria ao carregar um documento desse tipo');
+    }
+  });
+  const semOpcional = (t.opcionais || []).filter((p) => !existe(p));
+  console.log('  %s: %d obrigatório(s) presente(s), %d opcional(is) ausente(s)%s',
+    chave, (t.scripts || []).filter(existe).length, semOpcional.length,
+    existe(t.embutida) ? '' : ', sem base embutida');
+});
 console.log('');
 
 for (const arquivo of Object.keys(esperado)) {
@@ -122,7 +159,7 @@ for (const arquivo of Object.keys(esperado)) {
 
   conferidos++;
   if (ok) {
-    console.log('  ok      ' + arquivo.padEnd(38) + r.totais.erros
+    console.log('  ok      ' + arquivo.padEnd(42) + r.totais.erros
       + ' erro(s), ' + r.totais.avisos + ' advertência(s)');
   }
 }

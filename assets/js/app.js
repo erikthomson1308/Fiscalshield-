@@ -93,6 +93,25 @@
   })();
 
   // ------------------------------------------------------------------
+  // O alcance da validação de NFS-e depende de uma lista que muda. O site
+  // mostra a data da cópia embarcada e aponta o painel oficial, para que
+  // ninguém confie numa relação velha sem saber que está velha.
+  // ------------------------------------------------------------------
+  (function contextualizaEscopo() {
+    var alvo = $('escopo-fonte');
+    var r = window.__RESUMO_MUNICIPIOS__;
+    if (!alvo || !r || !Roteador.ativo('nfse')) return;
+    alvo.innerHTML = '<b>' + r.aderentes_emissor_nacional + '</b> de <b>'
+      + r.total + '</b> municípios constam como aderentes ao Emissor '
+      + 'Nacional nesta cópia da relação'
+      + (r.atualizacao ? ', publicada pelo Comitê Gestor e atualizada em '
+        + esc(r.atualizacao) : '')
+      + '. A adesão muda: confira a situação atual no <a href="'
+      + esc(r.painel) + '" target="_blank" rel="noopener">painel oficial '
+      + 'de monitoramento</a>.';
+  })();
+
+  // ------------------------------------------------------------------
   var area = $('area-solta');
   var entrada = $('entrada-arquivos');
 

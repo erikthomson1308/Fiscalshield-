@@ -18,8 +18,12 @@
       marcas: ['infNFe', 'nfeProc', 'NFe'],
       dados: 'data/nfe/',
       scripts: ['assets/js/nfe/base.js', 'assets/js/nfe/tributos.js',
-        'assets/js/nfe/motor.js', 'assets/js/nfe/mapeamento-sap.js',
-        'assets/js/nfe/relatorio.js'],
+        'assets/js/nfe/motor.js', 'assets/js/nfe/relatorio.js'],
+      // Modulos que podem nao existir na build. O de mapeamento SAP sai da
+      // versao publica por classificacao, e a tela dele some sozinha quando
+      // os dados faltam - entao a ausencia do arquivo nao pode derrubar o
+      // carregamento inteiro.
+      opcionais: ['assets/js/nfe/mapeamento-sap.js'],
       embutida: 'data/nfe/base-embutida.js',
       espaco: 'NFe'
     },
@@ -31,6 +35,7 @@
       dados: 'data/nfse/',
       scripts: ['assets/js/nfse/base.js', 'assets/js/nfse/motor.js',
         'assets/js/nfse/relatorio.js'],
+      opcionais: [],
       embutida: 'data/nfse/base-embutida.js',
       espaco: 'NFSe'
     }
@@ -79,6 +84,15 @@
     }, Promise.resolve());
   }
 
+  /** Carrega o que puder, sem derrubar o conjunto se um arquivo faltar. */
+  function opcionalmente(urls) {
+    return urls.reduce(function (p, u) {
+      return p.then(function () {
+        return carregaScript(u).catch(function () { return null; });
+      });
+    }, Promise.resolve());
+  }
+
   /** Carrega o validador do tipo pedido, uma unica vez. */
   function prepara(chave) {
     var t = TIPOS[chave];
@@ -91,12 +105,13 @@
     }
     if (carregados[chave]) return carregados[chave];
 
-    carregados[chave] = emSequencia([t.embutida].concat(t.scripts))
-      .catch(function () {
-        // a base embutida so existe no pacote offline; sem ela, os scripts
-        // buscam os .json, o que exige o site servido por HTTP
-        return emSequencia(t.scripts);
-      })
+    // A base embutida só existe no pacote offline; sem ela, os scripts
+    // buscam os .json, o que exige o site servido por HTTP. Por isso a
+    // tentativa com ela vem primeiro e a falha não é erro.
+    carregados[chave] = carregaScript(t.embutida)
+      .catch(function () { return null; })
+      .then(function () { return opcionalmente(t.opcionais || []); })
+      .then(function () { return emSequencia(t.scripts); })
       .then(function () {
         var ns = raiz[t.espaco];
         if (!ns || !ns.Base) {
