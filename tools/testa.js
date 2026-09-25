@@ -1,10 +1,13 @@
-/* Teste de fumaca do motor, fora do navegador.
+/* Teste dos dois validadores, fora do navegador.
  *
  *   node tools/testa.js [arquivo.xml ...]
  *
- * Sem argumentos, valida todos os XML de exemplos/. Serve para conferir o
- * motor sem depender do navegador e para checar, a cada mudanca na base, que
- * nenhuma nota valida passou a acusar erro inventado.
+ * Sem argumentos, valida todos os XML de exemplos/ - que incluem NF-e e
+ * DPS. Reproduz o que o roteador faz na pagina: reconhece o documento pelo
+ * conteudo e manda para o motor daquele tipo.
+ *
+ * O ponto do teste nao e achar erro nos exemplos: e conferir, a cada mudanca
+ * na base, que nenhum documento valido passou a acusar erro que nao existe.
  */
 'use strict';
 
@@ -13,99 +16,117 @@ const path = require('path');
 
 const raizProjeto = path.resolve(__dirname, '..');
 const dir = (p) => path.join(raizProjeto, p);
-
-global.fetch = undefined;
-require(dir('assets/js/base.js'));
-require(dir('assets/js/leitor.js'));
-require(dir('assets/js/tributos.js'));
-require(dir('assets/js/motor.js'));
-
 const leJSON = (p) => JSON.parse(fs.readFileSync(dir(p), 'utf8'));
-// o layout DFe/SAP nao existe na versao publica do site, e o motor nao
-// depende dele: alimenta apenas a consulta de mapeamento
-const leOpcional = (p) => (fs.existsSync(dir(p)) ? leJSON(p) : { campos: [] });
+const existe = (p) => fs.existsSync(dir(p));
 
-const layout = leJSON('data/layout.json');
-const regras = leJSON('data/regras.json');
-const dfe = leOpcional('data/layout-dfe.json');
-const fontes = leJSON('data/fontes.json');
+require(dir('assets/js/leitor.js'));
 
-// aplica os ajustes declarados, como o build_db.py faz
-global.Base.carregaDe(layout, regras, dfe, fontes);
+// Os dois validadores sao opcionais: a versao publica traz so a NF-e, e o
+// teste precisa rodar igual nas duas builds sem exigir o que nao existe.
+const disponiveis = {};
 
-console.log('base: %d campos | %d regras | %d campos DFe',
-  layout.campos.length, regras.regras.length, dfe.campos.length);
+if (existe('assets/js/nfe/motor.js') && existe('data/nfe/layout.json')) {
+  require(dir('assets/js/nfe/base.js'));
+  require(dir('assets/js/nfe/tributos.js'));
+  require(dir('assets/js/nfe/motor.js'));
+  global.NFe.Base.carregaDe(
+    leJSON('data/nfe/layout.json'), leJSON('data/nfe/regras.json'),
+    existe('data/nfe/layout-dfe.json')
+      ? leJSON('data/nfe/layout-dfe.json') : { campos: [] },
+    leJSON('data/nfe/fontes.json'));
+  disponiveis.nfe = true;
+  console.log('NF-e   : %d campos | %d regras',
+    global.NFe.Base.dados.campos.length, global.NFe.Base.dados.regras.length);
+}
+
+if (existe('assets/js/nfse/motor.js') && existe('data/nfse/versoes.json')) {
+  require(dir('assets/js/nfse/base.js'));
+  require(dir('assets/js/nfse/motor.js'));
+  global.NFSe.Base.carregaDe(
+    leJSON('data/nfse/versoes.json'), leJSON('data/nfse/tabelas.json'),
+    leJSON('data/nfse/comparativo.json'), leJSON('data/nfse/fontes.json'));
+  disponiveis.nfse = true;
+  console.log('NFS-e  : %s | %d campos | %d regras | %d pares CST×cClassTrib',
+    global.NFSe.Base.dados.vigente.toUpperCase(),
+    global.NFSe.Base.dados.campos.length, global.NFSe.Base.dados.regras.length,
+    (global.NFSe.Base.dados.tabelas.associacao_cst_cclasstrib
+      || { itens: [] }).itens.length);
+}
+
+if (!Object.keys(disponiveis).length) {
+  console.log('Nenhum validador disponível nesta pasta.');
+  process.exit(1);
+}
+
+// ---- roteamento, igual ao da pagina
+function identifica(texto) {
+  const a = texto.slice(0, 4000);
+  if (/<(\w+:)?infDPS[\s>]/.test(a) || /<(\w+:)?infNFSe[\s>]/.test(a)) return 'nfse';
+  if (/<(\w+:)?infNFe[\s>]/.test(a)) return 'nfe';
+  if (/<(\w+:)?DPS[\s>]/.test(a) || /<(\w+:)?NFSe[\s>]/.test(a)) return 'nfse';
+  if (/<(\w+:)?(nfeProc|NFe)[\s>]/.test(a)) return 'nfe';
+  return null;
+}
+const MOTOR = { nfe: () => global.NFe.Motor, nfse: () => global.NFSe.Motor };
+const ROTULO = { nfe: 'NF-e / NFC-e', nfse: 'NFS-e nacional' };
 
 let alvos = process.argv.slice(2);
 if (!alvos.length) {
   const pasta = dir('exemplos');
-  if (fs.existsSync(pasta)) {
-    alvos = fs.readdirSync(pasta)
-      .filter((f) => f.toLowerCase().endsWith('.xml'))
-      .map((f) => path.join(pasta, f));
-  }
+  alvos = fs.existsSync(pasta)
+    ? fs.readdirSync(pasta).filter((f) => f.toLowerCase().endsWith('.xml'))
+      .map((f) => path.join(pasta, f))
+    : [];
 }
-if (!alvos.length) {
-  console.log('\nNenhum XML para testar. Coloque arquivos em exemplos/.');
-  process.exit(0);
-}
+if (!alvos.length) { console.log('\nNenhum XML em exemplos/.'); process.exit(0); }
 
 let totalErros = 0;
+let naoReconhecidos = 0;
 const porGrupo = {};
 
 for (const arquivo of alvos) {
   const texto = fs.readFileSync(arquivo, 'utf8');
-  const inicio = Date.now();
-  const r = global.Motor.valida(texto, path.basename(arquivo), {
-    ordem: 'aviso', mapeamento: true, tolerancia: 0.001
-  });
-  const ms = Date.now() - inicio;
+  const tipo = identifica(texto);
+  const nome = path.basename(arquivo);
 
   console.log('\n' + '='.repeat(78));
-  console.log('%s  (%d ms)', path.basename(arquivo), ms);
-  console.log('  chave %s', r.cabecalho.chave || '—');
-  console.log('  mod %s  serie %s  nº %s  itens %s  vNF %s  CRT %s',
-    r.cabecalho.modelo, r.cabecalho.serie, r.cabecalho.numero,
-    r.cabecalho.itens, r.cabecalho.vNF, r.cabecalho.crt);
+  if (!tipo) {
+    console.log('%s  ->  NÃO RECONHECIDO', nome);
+    naoReconhecidos++;
+    continue;
+  }
+  if (!disponiveis[tipo]) {
+    console.log('%s  ->  %s (validador ausente nesta build)', nome, ROTULO[tipo]);
+    continue;
+  }
+
+  const r = MOTOR[tipo]().valida(texto, nome,
+    { ordem: 'aviso', mapeamento: true, tolerancia: 0.001 });
+
+  console.log('%s  ->  %s', nome, ROTULO[tipo]);
   console.log('  elementos %d | mapeados %d | fora do mapeamento %d',
     r.totais.elementos, r.totais.mapeados, r.totais.foraMapeamento);
-  console.log('  ERROS %d | avisos %d | risco %s',
-    r.totais.erros, r.totais.avisos, r.risco);
+  console.log('  ERROS %d | avisos %d | informações %d | risco %s',
+    r.totais.erros, r.totais.avisos, r.totais.informacoes, r.risco);
 
   totalErros += r.totais.erros;
+  for (const a of r.achados) porGrupo[a.grupo] = (porGrupo[a.grupo] || 0) + 1;
 
-  for (const a of r.achados) {
-    porGrupo[a.grupo] = (porGrupo[a.grupo] || 0) + 1;
-  }
-
-  const mostra = r.achados.filter((a) => a.nivel === 'erro').slice(0, 25);
-  for (const a of mostra) {
+  for (const a of r.achados.filter((x) => x.nivel === 'erro').slice(0, 20)) {
     console.log('   [%s] %s', a.grupo, a.titulo);
-    console.log('        alvo: %s (linha %d)', a.alvo, a.linha);
+    console.log('        alvo: %s', a.alvo);
     if (a.esperado) console.log('        esperado: %s', a.esperado.slice(0, 110));
     if (a.obtido) console.log('        obtido:   %s', a.obtido.slice(0, 110));
-    if (a.fonte) console.log('        fonte:    %s', a.fonte.slice(0, 110));
+    if (a.regra) console.log('        regra %s', a.regra.codigo);
   }
-  const avisos = r.achados.filter((a) => a.nivel === 'aviso');
-  if (avisos.length) {
-    console.log('   --- avisos (%d):', avisos.length);
-    for (const a of avisos.slice(0, 12)) {
-      console.log('   [%s] %s — %s', a.grupo, a.titulo, a.alvo);
-    }
-  }
-
-  if (r.fiscal) {
-    const naoFecham = r.fiscal.totais.filter((t) => !t.ok);
-    console.log('   totalizadores conferidos: %d | não fecham: %d',
-      r.fiscal.totais.length, naoFecham.length);
-    if (r.fiscal.rtc.presente) {
-      console.log('   RTC presente: %d itens com IBS/CBS', r.fiscal.rtc.itens.length);
-    }
+  for (const a of r.achados.filter((x) => x.nivel === 'aviso').slice(0, 8)) {
+    console.log('   [aviso] %s — %s', a.titulo, a.alvo);
   }
 }
 
 console.log('\n' + '='.repeat(78));
 console.log('achados por grupo:');
 Object.keys(porGrupo).sort((a, b) => porGrupo[b] - porGrupo[a])
-  .forEach((g) => console.log('   ' + g.padEnd(22) + porGrupo[g]));
-console.log('\ntotal de erros: %d', totalErros);
+  .forEach((g) => console.log('   ' + g.padEnd(24) + porGrupo[g]));
+console.log('\ntotal de erros: %d | não reconhecidos: %d',
+  totalErros, naoReconhecidos);

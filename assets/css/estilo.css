@@ -103,6 +103,22 @@ main{max-width:1220px;margin:0 auto;padding:24px}
 .solta-titulo{font-weight:700;margin:10px 0 4px}
 .solta-nota{color:var(--tinta);font-size:13px;margin:0}
 
+/* ---------- exemplos prontos ---------- */
+.exemplos{margin-top:16px;padding-top:14px;border-top:1px solid var(--linha)}
+.exemplos-titulo{font-size:12.5px;color:var(--tinta-rotulo);font-weight:700;margin:0 0 10px}
+.exemplos-lista{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.exemplo{
+  text-align:left;font:inherit;font-size:12.5px;cursor:pointer;
+  background:var(--papel);border:1px solid var(--linha);
+  border-left:4px solid var(--tr-navy);padding:10px 13px;color:var(--tinta);
+}
+.exemplo:hover{border-color:var(--tr-orange);border-left-color:var(--tr-orange)}
+.exemplo:focus-visible{outline:2px solid var(--tr-orange);outline-offset:1px}
+.exemplo.defeituoso{border-left-color:var(--alerta-vermelho)}
+.exemplo b{display:block;font-weight:700;margin-bottom:3px}
+.exemplo em{display:block;font-style:normal;font-size:11.5px;line-height:1.4}
+.exemplo .tag{margin-top:6px;display:inline-block}
+
 .opcoes{display:flex;gap:22px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--linha)}
 .opcao{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--tinta-rotulo);font-weight:700}
 .opcao.caixa{flex-direction:row;align-items:center;gap:8px;align-self:flex-end;padding-bottom:7px}

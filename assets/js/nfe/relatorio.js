@@ -2,8 +2,10 @@
 (function (raiz) {
   'use strict';
 
-  var Base = raiz.Base;
-  var T = raiz.Tributos;
+  raiz.NFe = raiz.NFe || {};
+
+  var Base = raiz.NFe.Base;
+  var T = raiz.NFe.Tributos;
 
   function esc(s) {
     return String(s === null || s === undefined ? '' : s)
@@ -473,7 +475,7 @@
     return cabecalho + ajustes + busca
       + el('h3', {}, 'Campos (' + campos.length + ')') + tabCampos
       + el('h3', { style: 'margin-top:18px' }, 'Regras (' + regras.length + ')') + tabRegras
-      + (raiz.MapeamentoSAP ? raiz.MapeamentoSAP.render(f, el, esc) : '');
+      + (raiz.NFe.MapeamentoSAP ? raiz.NFe.MapeamentoSAP.render(f, el, esc) : '');
   }
 
   // ------------------------------------------------------------------
@@ -596,12 +598,12 @@
     }, null, 2);
   }
 
-  raiz.Relatorio = {
+  raiz.NFe.Relatorio = {
     placar: placar, resumo: resumo, achados: achados, campos: campos,
     tributos: tributos, reforma: reforma, baseDeDados: baseDeDados,
     relatorioHTML: relatorioHTML, paraCSV: paraCSV, paraJSON: paraJSON,
     esc: esc
   };
 
-  if (typeof module !== 'undefined' && module.exports) module.exports = raiz.Relatorio;
+  if (typeof module !== 'undefined' && module.exports) module.exports = raiz.NFe.Relatorio;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

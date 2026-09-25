@@ -11,7 +11,9 @@
 (function (raiz) {
   'use strict';
 
-  var Base = raiz.Base;
+  raiz.NFe = raiz.NFe || {};
+
+  var Base = raiz.NFe.Base;
   var Leitor = raiz.Leitor;
 
   var ANCORAS = ['infNFe', 'infNFeSupl'];
@@ -765,8 +767,8 @@
     confereCadastro(infNFe, col);
 
     var fiscal = null;
-    if (raiz.Tributos) {
-      fiscal = raiz.Tributos.confere(infNFe, col, opcoes);
+    if (raiz.NFe.Tributos) {
+      fiscal = raiz.NFe.Tributos.confere(infNFe, col, opcoes);
     }
 
     return montaResultado(nomeArquivo, lido, col, opcoes, {
@@ -830,7 +832,7 @@
     };
   }
 
-  raiz.Motor = {
+  raiz.NFe.Motor = {
     valida: valida,
     modulo11: modulo11,
     cnpjValido: cnpjValido,
@@ -838,5 +840,5 @@
     UF_IBGE: UF_IBGE
   };
 
-  if (typeof module !== 'undefined' && module.exports) module.exports = raiz.Motor;
+  if (typeof module !== 'undefined' && module.exports) module.exports = raiz.NFe.Motor;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

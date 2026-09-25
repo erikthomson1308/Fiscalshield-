@@ -1,0 +1,55 @@
+{
+  "_comentario": [
+    "O que cada exemplo deve produzir. E o contrato que tools/verifica.js",
+    "confere antes de publicar.",
+    "",
+    "Um validador testado so com documento correto nao foi testado: ele pode",
+    "estar aprovando tudo. Por isso o arquivo com defeitos propositais exige",
+    "que apontamentos especificos aparecam - se o motor ficar cego, a",
+    "publicacao falha em vez de ir ao ar validando errado.",
+    "",
+    "erros / avisos: valor exato esperado.",
+    "erros_minimo: piso, para o arquivo de defeitos.",
+    "exige_regra: codigos de regra que precisam aparecer nos achados.",
+    "exige_titulo: trechos de titulo que precisam aparecer."
+  ],
+
+  "exemplo-nfe-55-reforma-ibs-cbs.xml": {
+    "tipo": "nfe", "erros": 0, "avisos": 0,
+    "nota": "nota valida: qualquer apontamento aqui e falso positivo"
+  },
+  "exemplo-nfe-55-icms-ipi.xml": {
+    "tipo": "nfe", "erros": 3, "avisos": 0,
+    "nota": "divergencia real de base x aliquota em IPI, PIS e COFINS"
+  },
+  "exemplo-nfe-55-reforma-completa.xml": {
+    "tipo": "nfe", "erros": 3, "avisos": 0,
+    "nota": "mesma divergencia real da nota acima"
+  },
+
+  "exemplo-dps-minima.xml": {
+    "tipo": "nfse", "erros": 0, "avisos": 0,
+    "nota": "DPS sintetizada a partir do proprio leiaute: tem de passar"
+  },
+  "exemplo-dps-com-ibscbs.xml": {
+    "tipo": "nfse", "erros": 0, "avisos": 0,
+    "nota": "par CST x cClassTrib valido"
+  },
+
+  "exemplo-dps-com-defeitos.xml": {
+    "tipo": "nfse",
+    "erros_minimo": 8,
+    "exige_regra": ["E9996", "E0006", "E0015", "E0004"],
+    "exige_titulo": [
+      "Campo obrigatório ausente",
+      "Valor não numérico em campo numérico",
+      "Data fora do formato",
+      "Identificador da DPS não confere com cLocEmi",
+      "Identificador da DPS não confere com nDPS",
+      "Identificador da DPS não confere com CNPJ do prestador",
+      "cClassTrib não consta na associação oficial para este CST",
+      "CNPJ com dígito verificador inválido"
+    ],
+    "nota": "teste negativo: sete defeitos injetados de proposito"
+  }
+}

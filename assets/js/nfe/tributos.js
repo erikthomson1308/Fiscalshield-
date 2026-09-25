@@ -16,7 +16,9 @@
 (function (raiz) {
   'use strict';
 
-  var Base = raiz.Base;
+  raiz.NFe = raiz.NFe || {};
+
+  var Base = raiz.NFe.Base;
   var Leitor = raiz.Leitor;
 
   var PORTAL_CLASSIFICACAO =
@@ -605,7 +607,7 @@
     };
   }
 
-  raiz.Tributos = { confere: confere, moeda: moeda, pct: pct, num: num, arred: arred };
+  raiz.NFe.Tributos = { confere: confere, moeda: moeda, pct: pct, num: num, arred: arred };
 
-  if (typeof module !== 'undefined' && module.exports) module.exports = raiz.Tributos;
+  if (typeof module !== 'undefined' && module.exports) module.exports = raiz.NFe.Tributos;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

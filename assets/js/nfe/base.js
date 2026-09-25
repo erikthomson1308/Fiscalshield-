@@ -7,6 +7,8 @@
 (function (raiz) {
   'use strict';
 
+  raiz.NFe = raiz.NFe || {};
+
   var base = {
     pronta: false,
     campos: [],
@@ -193,7 +195,7 @@
     return false;
   }
 
-  raiz.Base = {
+  raiz.NFe.Base = {
     dados: base,
     carrega: carrega,
     carregaDe: carregaDe,
@@ -207,5 +209,5 @@
     tamanho: tamanho
   };
 
-  if (typeof module !== 'undefined' && module.exports) module.exports = raiz.Base;
+  if (typeof module !== 'undefined' && module.exports) module.exports = raiz.NFe.Base;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -9,6 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -22,8 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Conferir o motor contra os XML de exemplo
-        run: node tools/testa.js
+      # Portao de publicacao. Confere as duas direcoes: que documento valido
+      # nao gera apontamento inventado, e que documento com defeito conhecido
+      # continua sendo apontado. So a primeira metade deixaria passar um motor
+      # que aprovasse tudo.
+      - name: Conferir o motor contra os exemplos
+        run: node tools/verifica.js
 
       - uses: actions/configure-pages@v5
         # habilita o Pages no proprio fluxo. Sem isto, o primeiro deploy de um
