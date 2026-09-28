@@ -30,6 +30,17 @@ jobs:
       - name: Conferir o motor contra os exemplos
         run: node tools/verifica.js
 
+      # Carimbo de versao, exibido no rodape. A versao publica ja chega
+      # carimbada por tools/monta_publico.py com o commit interno de origem;
+      # aqui so se carimba quando o arquivo nao existe. Assim os dois sites
+      # mostram o mesmo codigo quando estao iguais.
+      - name: Carimbar a versao
+        run: |
+          if [ ! -f data/versao.js ]; then
+            printf 'window.__VERSAO__ = {"commit":"%s","data":"%s"};\n' \
+              "$GITHUB_SHA" "$(git log -1 --format=%cI)" > data/versao.js
+          fi
+
       - uses: actions/configure-pages@v5
         # habilita o Pages no proprio fluxo. Sem isto, o primeiro deploy de um
         # repositorio novo falha com "Get Pages site failed" e exige alguem

@@ -69,6 +69,19 @@
     return Roteador.TIPOS[t].rotulo;
   }).join(' e '));
 
+  // Carimbo de versao: o site interno e o publico mostram o mesmo codigo
+  // quando estao iguais, e qualquer um confere isso olhando o rodape.
+  (function versao() {
+    var v = window.__VERSAO__;
+    var alvo = $('versao');
+    if (!alvo) return;
+    var d = /^(\d{4})-(\d{2})-(\d{2})/.exec((v && v.data) || '');
+    alvo.textContent = v && v.commit
+      ? 'Versão ' + String(v.commit).slice(0, 7)
+        + (d ? ' · de ' + d[3] + '/' + d[2] + '/' + d[1] : '')
+      : 'Cópia local — sem carimbo de versão';
+  })();
+
   // ------------------------------------------------------------------
   // exemplos prontos, para quem chega sem um XML a mao.
   // Vem embutidos como script porque buscar arquivo com fetch nao funciona

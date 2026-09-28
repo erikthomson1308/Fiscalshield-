@@ -289,6 +289,7 @@ tr.linha-aviso{background:var(--tr-light-amber)}
 .rodape > *{max-width:1220px;margin:0 auto;padding:0 24px}
 .rodape #rodape-fontes{padding-top:20px;font-size:12.5px;color:var(--tinta)}
 .rodape .aviso{padding:12px 24px 26px;font-size:12px;color:var(--tinta);max-width:1220px}
+.rodape .versao{padding:0 24px 20px;margin-top:-14px;font-size:11px;color:var(--tinta-rotulo);font-family:ui-monospace,Menlo,Consolas,monospace}
 .fonte-item{margin-bottom:5px}
 .fonte-item .mono{font-size:11px;color:var(--tinta-rotulo)}
 
