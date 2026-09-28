@@ -23,8 +23,31 @@
     ]
   };
 
+  // O que cada aba de entrada promete. A aba decide o que sera avaliado; o
+  // conteudo do XML continua sendo quem confirma o tipo.
+  var MODOS = {
+    nfe: {
+      aba: 'NF-e / NFC-e',
+      sub: 'modelos 55 e 65',
+      objeto: 'NF-e ou NFC-e',
+      titulo: 'Arraste o XML da NF-e ou NFC-e aqui, ou clique para selecionar',
+      nota: 'Leiaute 4.00 e grupos da Reforma, com ou sem protocolo '
+        + '(nfeProc). Nenhum arquivo sai do seu computador.'
+    },
+    nfse: {
+      aba: 'NFS-e · Emissor Nacional',
+      sub: 'DPS e NFS-e do padrão nacional',
+      objeto: 'DPS ou NFS-e do padrão nacional',
+      titulo: 'Arraste o XML da DPS ou da NFS-e nacional aqui, ou clique para selecionar',
+      nota: 'Leiaute e regras do Comitê Gestor da NFS-e. A primeira conferência '
+        + 'é se o município emissor é aderente ao Emissor Nacional. Nenhum '
+        + 'arquivo sai do seu computador.'
+    }
+  };
+
   var resultados = [];
   var lidos = [];
+  var modo = null;
   var atual = 0;
   var abaAtiva = 'resumo';
   var filtroBase = '';
@@ -51,11 +74,12 @@
   // Vem embutidos como script porque buscar arquivo com fetch nao funciona
   // com o site aberto direto do disco, que e como a copia distribuida roda.
   // ------------------------------------------------------------------
-  (function montaExemplos() {
+  function montaExemplos() {
     var cat = window.__EXEMPLOS__;
+    $('exemplos').hidden = true;
     if (!cat) return;
     var nomes = Object.keys(cat).filter(function (n) {
-      return Roteador.ativo(cat[n].tipo);
+      return cat[n].tipo === modo && Roteador.ativo(cat[n].tipo);
     });
     if (!nomes.length) return;
 
@@ -90,6 +114,52 @@
       });
 
     $('exemplos').hidden = false;
+  }
+
+  // ------------------------------------------------------------------
+  // abas de entrada: uma por tipo de documento que esta build oferece.
+  // Com um tipo so (versao publica), a barra nem aparece.
+  // ------------------------------------------------------------------
+  function aplicaModo(novo) {
+    modo = novo;
+    var m = MODOS[modo];
+    Array.prototype.forEach.call($('modos').querySelectorAll('.modo'), function (b) {
+      var sim = b.dataset.modo === modo;
+      b.classList.toggle('ativo', sim);
+      b.setAttribute('aria-selected', sim ? 'true' : 'false');
+    });
+    document.querySelector('.solta-titulo').textContent = m.titulo;
+    document.querySelector('.solta-nota').textContent = m.nota;
+    $('area-solta').setAttribute('aria-label', m.titulo);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tipo]'), function (el) {
+      el.hidden = el.dataset.tipo !== modo;
+    });
+    montaExemplos();
+  }
+
+  (function montaModos() {
+    var ativos = Roteador.ativos().filter(function (t) { return MODOS[t]; });
+    var pedido = (location.hash || '').replace('#', '');
+    var inicial = ativos.indexOf(pedido) !== -1 ? pedido : ativos[0];
+
+    if (ativos.length > 1) {
+      $('modos').innerHTML = ativos.map(function (t) {
+        return '<button class="modo" role="tab" data-modo="' + t + '">'
+          + esc(MODOS[t].aba) + '<small>' + esc(MODOS[t].sub) + '</small></button>';
+      }).join('');
+      $('modos').hidden = false;
+      Array.prototype.forEach.call($('modos').querySelectorAll('.modo'), function (b) {
+        b.addEventListener('click', function () {
+          if (b.dataset.modo === modo) return;
+          if (history.replaceState) history.replaceState(null, '', '#' + b.dataset.modo);
+          lidos = []; resultados = []; atual = 0; abaAtiva = 'resumo';
+          $('painel-resultado').hidden = true;
+          $('painel-inicial').hidden = false;
+          aplicaModo(b.dataset.modo);
+        });
+      });
+    }
+    aplicaModo(inicial);
   })();
 
   // ------------------------------------------------------------------
@@ -175,27 +245,32 @@
 
   function valida() {
     var op = opcoes();
-    var tipos = {};
-    lidos.forEach(function (a) {
-      var t = Roteador.identifica(a.texto);
-      if (t) tipos[t] = true;
+    var doModo = lidos.filter(function (a) {
+      return Roteador.identifica(a.texto) === modo;
     });
 
-    var necessarios = Object.keys(tipos);
-    if (!necessarios.length) {
+    if (!doModo.length) {
+      var outros = lidos.map(function (a) { return Roteador.identifica(a.texto); })
+        .filter(function (t) { return t && t !== modo && MODOS[t]; });
       return Promise.reject(new Error(
-        'Nenhum dos arquivos é uma NF-e, NFC-e, DPS ou NFS-e. A ferramenta '
-        + 'reconhece o documento pelo conteúdo, não pelo nome do arquivo.'));
+        'Nenhum dos arquivos é ' + MODOS[modo].objeto + '.'
+        + (outros.length && Roteador.ativo(outros[0])
+          ? ' O que foi enviado é ' + Roteador.TIPOS[outros[0]].rotulo
+            + ': use a aba “' + MODOS[outros[0]].aba + '”.'
+          : outros.length
+            ? ' O que foi enviado é ' + Roteador.TIPOS[outros[0]].rotulo
+              + ', que esta versão do site não valida.'
+            : ' A ferramenta reconhece o documento pelo conteúdo, não pelo '
+              + 'nome do arquivo.')));
     }
 
-    selo('carregando a base de ' + necessarios.map(function (t) {
-      return Roteador.TIPOS[t].rotulo;
-    }).join(' e ') + '…');
+    selo('carregando a base de ' + Roteador.TIPOS[modo].rotulo + '…');
 
-    return Promise.all(necessarios.map(Roteador.prepara)).then(function () {
+    return Roteador.prepara(modo).then(function () {
       resultados = lidos.map(function (a) {
         var tipo = Roteador.identifica(a.texto);
         if (!tipo) return { tipo: null, arquivo: a.nome, ns: null, r: null };
+        if (tipo !== modo) return { tipo: null, fora: tipo, arquivo: a.nome, ns: null, r: null };
         var ns = window[Roteador.TIPOS[tipo].espaco];
         return {
           tipo: tipo, arquivo: a.nome, ns: ns,
@@ -229,7 +304,8 @@
       var estado = !x.r ? 'alerta'
         : (x.r.totais.erros ? 'reprovado'
           : (x.r.totais.avisos ? 'alerta' : 'aprovado'));
-      var marca = x.tipo ? Roteador.TIPOS[x.tipo].rotulo : 'não reconhecido';
+      var marca = x.tipo ? Roteador.TIPOS[x.tipo].rotulo
+        : (x.fora ? 'outra aba' : 'não reconhecido');
       return '<button class="chip-arquivo' + (n === atual ? ' ativo' : '')
         + '" data-n="' + n + '"><span class="ponto ' + estado + '"></span>'
         + esc(x.arquivo) + ' <span class="tag">' + esc(marca)
@@ -246,6 +322,21 @@
   function desenha() {
     var x = resultados[atual];
     if (!x) return;
+
+    if (!x.tipo && x.fora) {
+      $('placar').innerHTML = '';
+      $('abas').innerHTML = '';
+      $('painel-conteudo').innerHTML =
+        '<div class="achado aviso"><p class="achado-msg">'
+        + esc(x.arquivo) + ' é ' + esc(Roteador.TIPOS[x.fora].rotulo)
+        + ' e não foi avaliado nesta aba</p>'
+        + '<p class="achado-detalhe">Esta aba avalia ' + esc(MODOS[modo].objeto) + '. '
+        + (Roteador.ativo(x.fora)
+          ? 'Para este arquivo, use a aba “' + esc(MODOS[x.fora].aba) + '”.'
+          : 'Esta versão do site não valida ' + esc(Roteador.TIPOS[x.fora].rotulo) + '.')
+        + '</p></div>';
+      return;
+    }
 
     if (!x.tipo) {
       $('placar').innerHTML = '';

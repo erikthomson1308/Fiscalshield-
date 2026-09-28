@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fiscal Shield — Validador de NF-e e NFC-e</title>
-<meta name="description" content="Valida XML de NF-e e NFC-e contra o leiaute oficial, as regras de validação da SEFAZ e os grupos da Reforma Tributária. Roda inteiramente no navegador.">
+<title>Fiscal Shield — Validador de NF-e, NFC-e e NFS-e</title>
+<meta name="description" content="Valida XML de NF-e, NFC-e, DPS e NFS-e nacional contra os leiautes oficiais, as regras de validação da SEFAZ e do Comitê Gestor da NFS-e, e os grupos da Reforma Tributária. Roda inteiramente no navegador.">
 <link rel="stylesheet" href="assets/css/estilo.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
       <span class="escudo" aria-hidden="true"></span>
       <div>
         <h1>Fiscal Shield</h1>
-        <p>Validação de NF-e e NFC-e contra o leiaute oficial, as regras de validação e a Reforma Tributária</p>
+        <p>Validação de NF-e, NFC-e e NFS-e nacional contra os leiautes oficiais, as regras de validação e a Reforma Tributária</p>
       </div>
     </div>
     <div class="selo-base" id="selo-base">
@@ -27,12 +27,14 @@
 <main>
 
   <section class="cartao" id="painel-entrada">
+    <nav class="modos" id="modos" role="tablist" aria-label="Tipo de documento a validar" hidden></nav>
+
     <div id="area-solta" class="solta" tabindex="0" role="button"
          aria-label="Selecionar arquivos XML para validação">
       <div class="solta-icone" aria-hidden="true">&#8681;</div>
       <p class="solta-titulo">Arraste os XMLs aqui ou clique para selecionar</p>
       <p class="solta-nota">
-        A ferramenta reconhece o documento pelo
+        NF-e, NFC-e, DPS ou NFS-e — a ferramenta reconhece o documento pelo
         conteúdo. Nenhum arquivo sai do seu computador.
       </p>
       <input type="file" id="entrada-arquivos" accept=".xml,text/xml,application/xml" multiple hidden>
@@ -44,7 +46,7 @@
     </div>
 
     <div class="opcoes">
-      <label class="opcao">
+      <label class="opcao" data-tipo="nfe">
         <span>Tolerância no recálculo <small>(NF-e)</small></span>
         <select id="opt-tolerancia">
           <option value="0.001">0,1% (padrão do projeto)</option>
@@ -81,17 +83,40 @@
   </section>
 
   <section class="cartao" id="painel-inicial">
-    <h2>O que esta ferramenta faz</h2>
+    <h2>Dois documentos, um lugar</h2>
     <div class="grade-cap">
-      <div>
+      <div data-tipo="nfe">
         <h3>NF-e e NFC-e</h3>
         <p>Leiaute 4.00, chave de acesso, recálculo de ICMS, ICMS-ST, FCP, IPI,
         PIS e COFINS por item, reconciliação dos 22 totalizadores e os grupos
         de IBS, CBS e IS da Reforma. Cada apontamento cita a regra da SEFAZ e o
         número da rejeição.</p>
       </div>
+      <div data-tipo="nfse">
+        <h3>NFS-e nacional</h3>
+        <p>Leiaute e regras de negócio do Comitê Gestor, identificador da DPS
+        recomposto campo a campo, par CST × cClassTrib conferido contra a
+        associação oficial e o comparativo entre as versões do leiaute.</p>
+      </div>
     </div>
 
+    <div class="escopo" data-tipo="nfse">
+      <h3>O alcance da validação de NFS-e</h3>
+      <p>
+        A ferramenta valida <b>somente o Emissor Nacional</b>, e ele só se
+        aplica a município que aderiu e está ativo. <b>Cerca de metade dos
+        municípios brasileiros não é aderente</b> — nesses, o documento segue
+        como RPS para o webservice da própria prefeitura, com leiaute e regras
+        que variam de cidade para cidade e que esta ferramenta não cobre.
+      </p>
+      <p>
+        Por isso a primeira coisa conferida em cada DPS é o município emissor,
+        antes do conteúdo. Uma DPS de município não aderente costuma chegar
+        com campos zerados — e a causa é o roteamento, não o dado que o
+        sistema de origem mandou.
+      </p>
+      <p class="escopo-fonte" id="escopo-fonte"></p>
+    </div>
 
     <h2 style="margin-top:24px">O que estas validações têm em comum</h2>
     <div class="grade-cap">
@@ -102,7 +127,8 @@
     </div>
 
     <p class="nota-privacidade">
-      A base é carregada apenas quando o primeiro documento é enviado.
+      A base de cada tipo de documento é carregada só quando um documento
+      daquele tipo aparece — quem valida apenas NF-e não baixa a base da NFS-e.
     </p>
   </section>
 
@@ -113,6 +139,8 @@
     <b>Base de dados</b>
     <div class="fonte-item">NF-e / NFC-e — ANEXO I do Manual de Orientação do
       Contribuinte, NT 2025.002-RTC e NT 2019.001</div>
+    <div class="fonte-item">NFS-e nacional — Anexos VI, VII e VIII das Notas
+      Técnicas SE/CGNFS-e 004, 007 e 009</div>
     <div class="fonte-item mono">As fontes de cada campo e de cada regra, com o
       SHA-256 dos documentos, ficam na aba Base de dados.</div>
   </div>
@@ -124,6 +152,7 @@
 
 <script src="assets/js/leitor.js"></script>
 <script src="data/exemplos-embutidos.js"></script>
+<script src="data/nfse/municipios-resumo.js"></script>
 <script src="assets/js/tipos.js"></script>
 <script src="assets/js/roteador.js"></script>
 <script src="assets/js/app.js"></script>

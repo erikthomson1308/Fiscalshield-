@@ -33,13 +33,25 @@
   },
   "exemplo-dps-com-ibscbs.xml": {
     "tipo": "nfse", "erros": 0, "avisos": 0,
-    "nota": "par CST x cClassTrib valido, municipio aderente"
+    "nota": "DPS completa e coerente: tomador, PIS/COFINS, par CST x cClassTrib valido, municipio aderente. Qualquer regra de negocio disparada aqui e falso positivo"
   },
   "exemplo-dps-municipio-nao-aderente.xml": {
     "tipo": "nfse",
     "erros": 1,
+    "exige_regra": ["E0039"],
     "exige_titulo": ["não é aderente ao Emissor Nacional"],
-    "nota": "mesma DPS, so muda o municipio emissor. O documento esta correto por dentro e ainda assim nao deveria existir como DPS - e o caso que se diagnostica errado quando se olha so o conteudo"
+    "nota": "o caso real de 25/08/2026: Novo Hamburgo ainda usava sistema proprio. O documento esta correto por dentro e ainda assim nao deveria existir como DPS"
+  },
+  "exemplo-dps-municipio-apos-adesao.xml": {
+    "tipo": "nfse", "erros": 0, "avisos": 0,
+    "exige_titulo": ["aderente por ajuste declarado"],
+    "nota": "mesma DPS em 24/09/2026: a planilha oficial ainda diz Nao, mas o municipio usa o Emissor Nacional desde 01/09/2026. Tem de passar"
+  },
+  "exemplo-dps-regras-de-negocio.xml": {
+    "tipo": "nfse",
+    "erros_minimo": 9,
+    "exige_regra": ["E0015", "E0202", "E0247", "E0431", "E0588", "E0595", "E0604", "E0694", "E0901"],
+    "nota": "teste negativo das regras de negocio: competencia apos a emissao, tomador com a raiz do prestador, e-mail invalido, desconto igual ao servico, retencao e aliquota com regime especial, aliquota acima de 5%, PIS que nao fecha e indicador de operacao inexistente"
   },
 
   "exemplo-dps-com-defeitos.xml": {

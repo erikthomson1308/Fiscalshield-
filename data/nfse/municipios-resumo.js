@@ -1,0 +1,2 @@
+/* Gerado por tools/build_municipios.py. Nao edite a mao. */
+window.__RESUMO_MUNICIPIOS__ = {"total":5571,"aderentes_emissor_nacional":2863,"aderentes_ambiente_nacional":5543,"atualizacao":"14/09/26","arquivo":"municipios-aderentes-20260918.xlsx","painel":"https://app.powerbi.com/view?r=eyJrIjoiNGQ4YTcxNmMtMzdhNC00Mzc5LTllM2EtMjY1MTM3NWQyZDgyIiwidCI6IjZmNDlhYTQzLTgyMmEtNGMyMC05NjcwLWRiNzcwMGJmMWViMCJ9&pageName=608609c2e0a53d7a3c6e","pagina":"https://www.gov.br/nfse/pt-br/municipios/monitoramento-adesoes"};

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DPS xmlns="http://www.sped.fazenda.gov.br/nfse" versao="1.00">
+  <infDPS Id="DPS431490221122233300018100001000000000037140">
+    <tpAmb>2</tpAmb>
+    <dhEmi>2026-09-24T10:00:00-03:00</dhEmi>
+    <verAplic>1.00</verAplic>
+    <serie>1</serie>
+    <nDPS>37140</nDPS>
+    <dCompet>2026-09</dCompet>
+    <tpEmit>1</tpEmit>
+    <cLocEmi>4314902</cLocEmi>
+    <prest>
+      <CNPJ>11222333000181</CNPJ>
+      <regTrib>
+        <opSimpNac>1</opSimpNac>
+        <regEspTrib>0</regEspTrib>
+      </regTrib>
+    </prest>
+    <serv>
+      <locPrest>
+        <cLocPrestacao>4314902</cLocPrestacao>
+      </locPrest>
+      <cServ>
+        <cTribNac>010101</cTribNac>
+        <xDescServ>Desenvolvimento de sistema sob encomenda</xDescServ>
+        <cNBS>115021000</cNBS>
+      </cServ>
+    </serv>
+    <valores>
+      <vServPrest>
+        <vServ>1000.00</vServ>
+      </vServPrest>
+      <trib>
+        <tribMun>
+          <tribISSQN>1</tribISSQN>
+          <tpRetISSQN>1</tpRetISSQN>
+        </tribMun>
+        <totTrib>
+          <indTotTrib>0</indTotTrib>
+        </totTrib>
+      </trib>
+    </valores>
+  </infDPS>
+</DPS>

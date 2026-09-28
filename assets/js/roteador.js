@@ -35,7 +35,8 @@
       dados: 'data/nfse/',
       scripts: ['assets/js/nfse/base.js', 'assets/js/nfse/motor.js',
         'assets/js/nfse/relatorio.js'],
-      opcionais: [],
+      // tabela de adesao municipal: sem ela o roteamento vira so um aviso
+      opcionais: ['data/nfse/municipios-embutida.js'],
       embutida: 'data/nfse/base-embutida.js',
       espaco: 'NFSe'
     }

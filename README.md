@@ -1,7 +1,9 @@
-# Fiscal Shield — validador de NF-e e NFC-e
+# Fiscal Shield — validador de NF-e, NFC-e e NFS-e nacional
 
 Confere o XML de NF-e e NFC-e contra o leiaute oficial, as regras de validação
-da SEFAZ e os grupos da Reforma Tributária (IBS, CBS e IS).
+da SEFAZ e os grupos da Reforma Tributária (IBS, CBS e IS), e o XML da DPS e
+da NFS-e do Emissor Nacional contra o leiaute e as regras de negócio do
+Comitê Gestor da NFS-e.
 
 **Roda inteiramente no navegador.** Não há servidor, upload nem armazenamento:
 o arquivo é lido pela própria máquina de quem usa e nunca sai dela. Feche a
@@ -12,11 +14,13 @@ aba e nada permanece.
 Abra o site publicado, ou baixe esta pasta e dê um duplo clique no
 `index.html`. Funciona offline, sem instalar nada.
 
-Arraste o XML para a área indicada. O resultado traz o resumo do documento, os
+Escolha a aba — **NF-e / NFC-e** ou **NFS-e · Emissor Nacional** — e arraste o
+XML para a área indicada. O resultado traz o resumo do documento, os
 apontamentos, os campos conferidos, a reconciliação dos tributos e os grupos
-da Reforma — com exportação em HTML, JSON e CSV.
+da Reforma — com exportação em HTML, JSON e CSV. O endereço terminado em
+`#nfse` abre direto na aba de NFS-e.
 
-## O que ele verifica
+## O que ele verifica — NF-e e NFC-e
 
 | Frente | Conferência |
 |---|---|
@@ -31,6 +35,25 @@ da Reforma — com exportação em HTML, JSON e CSV.
 
 Cada apontamento traz o documento, a página e — quando existe — o código da
 regra oficial e o número da rejeição que a SEFAZ devolveria.
+
+## O que ele verifica — NFS-e nacional (DPS)
+
+| Frente | Conferência |
+|---|---|
+| Município emissor | Adesão ao Emissor Nacional **na data de emissão da DPS**, convênio ativo e competência x início do convênio (E0016, E0037, E0038, E0039) |
+| Leiaute | Leiaute vigente da NT 004 (Anexo VI): obrigatoriedade, ordem, ocorrência, tipo, tamanho e casas decimais |
+| Identificador | Id da DPS recomposto campo a campo (E0004) |
+| Regras de negócio | As regras do Anexo VI que o próprio XML decide: datas, campos condicionados ao emitente, regime × retenção × alíquota, ISSQN, PIS/COFINS recalculado, IBS/CBS |
+| Reforma | Par CST × cClassTrib contra a associação oficial |
+
+A planilha oficial de adesão atrasa. Municípios que já trocaram de sistema e
+ainda aparecem como não aderentes ficam em `data/nfse/municipios-ajustes.json`,
+cada um com a data da troca e a fonte.
+
+Não é conferido o que depende de consulta ao Sistema Nacional: existência do
+CNPJ/CPF, cadastro e inscrição municipal, parametrização do município
+(alíquota, código municipal, benefícios, retenções), NFS-e referenciada e
+assinatura. O Resumo de cada documento diz isso.
 
 ## O que ele não decide
 
@@ -62,6 +85,11 @@ com a origem de cada um. Os documentos de referência são:
   Contribuinte)
 - NT 2025.002-RTC — IBS/CBS/IS, conforme a LC 214/2025
 - NT 2019.001 — Regras de Validação
+- NFS-e nacional — Anexos VI, VII e VIII das Notas Técnicas SE/CGNFS-e 004, 007
+  e 009, publicados em [gov.br/nfse](https://www.gov.br/nfse), e a relação de
+  municípios aderentes do
+  [Monitoramento das Adesões](https://www.gov.br/nfse/pt-br/municipios/monitoramento-adesoes)
+  (dados em `data/nfse/`)
 
 Há três complementos declarados em `data/ajustes.json`: `qBCProd`,
 `vAliqProd` e `vPIS` do grupo `PISOutr`, que faltam no texto do ANEXO I — o
@@ -95,4 +123,4 @@ sem assinatura digital e sem dado de contribuinte real.
 ## Aviso
 
 Ferramenta de apoio à conferência técnica. Não substitui a análise de
-profissional da área fiscal nem a autorização da SEFAZ.
+profissional da área fiscal nem a autorização da SEFAZ ou da SEFIN Nacional.

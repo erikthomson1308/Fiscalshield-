@@ -1,0 +1,29 @@
+{
+  "_comentario": [
+    "Trocas de sistema que a planilha oficial de adesao ainda nao reflete.",
+    "",
+    "A planilha do gov.br/nfse atrasa: um municipio pode adotar o Emissor",
+    "Nacional e continuar marcado como nao aderente por semanas. Sem este",
+    "arquivo, o validador acusaria erro de roteamento em nota correta.",
+    "",
+    "Cada entrada exige a data da troca e a fonte que a comprova. O motor",
+    "compara emissorNacionalDesde com a data de emissao da DPS: antes dela,",
+    "DPS e erro de roteamento; a partir dela, e o caminho certo.",
+    "",
+    "Retirar a entrada quando a planilha oficial passar a trazer o municipio",
+    "como aderente."
+  ],
+  "ajustes": [
+    {
+      "codigo": "4313409",
+      "nome": "Novo Hamburgo",
+      "uf": "RS",
+      "emissorNacionalDesde": "2026-09-01",
+      "sistemaProprioAte": "2026-08-31",
+      "fonte": "Prefeitura de Novo Hamburgo - Secretaria Municipal da Fazenda",
+      "url": "https://novohamburgo.atende.net/autoatendimento/servicos/aplicadas",
+      "conferido_em": "2026-09-28",
+      "justificativa": "O municipio adotou o Emissor Nacional como sistema unico a partir de 01/09/2026; o sistema municipal ficou disponivel ate 31/08/2026. A planilha oficial de 18/09/2026 ainda traz AderenteEmissorNacional = Nao."
+    }
+  ]
+}
